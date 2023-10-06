@@ -1,0 +1,42 @@
+import '../Models/enrollment_current_model.dart';
+import '../Services/Enrollment/enrollment_service.dart';
+import 'sp_global.dart';
+
+class CurrentEnrollmentGlobal {
+  static final CurrentEnrollmentGlobal _instance = CurrentEnrollmentGlobal._();
+
+  CurrentEnrollmentGlobal._();
+
+  factory CurrentEnrollmentGlobal() {
+    return _instance;
+  }
+
+  final SPGlobal _prefs = SPGlobal();
+  final EnrollmentService _enrollmentService = EnrollmentService();
+  late EnrollmentCurrentModel _enrollmentCurrentModel;
+
+  Future<EnrollmentCurrentModel?> createCurrentEnrollment() async {
+    EnrollmentCurrentModel? enrollmentCurrentModel =
+        await _enrollmentService.getCurrentEnrollmentByStudent();
+    if (enrollmentCurrentModel == null) return null;
+    _enrollmentCurrentModel = EnrollmentCurrentModel(
+      id: enrollmentCurrentModel.id,
+      personId: enrollmentCurrentModel.personId,
+      sectionId: enrollmentCurrentModel.sectionId,
+      sectionName: enrollmentCurrentModel.sectionName,
+      gradeName: enrollmentCurrentModel.gradeName,
+      levelName: enrollmentCurrentModel.levelName,
+      statusEnrollment: enrollmentCurrentModel.statusEnrollment,
+      roomId: enrollmentCurrentModel.roomId,
+      roomName: enrollmentCurrentModel.roomName,
+    );
+
+    _prefs.gradeName = enrollmentCurrentModel.gradeName;
+    _prefs.sectionName = enrollmentCurrentModel.sectionName;
+    _prefs.roomName = enrollmentCurrentModel.roomName ?? "-";
+    return _enrollmentCurrentModel;
+  }
+
+  EnrollmentCurrentModel get getEnrollmentCurrentModel =>
+      _enrollmentCurrentModel;
+}

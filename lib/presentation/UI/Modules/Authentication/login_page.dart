@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     GoogleSignInAccount? _googleSignInAccount = await _googleSignIn.signIn();
-    print(_googleSignInAccount);
+
     if (_googleSignInAccount == null) {
       _isLoading = false;
       await _googleSignIn.signOut();

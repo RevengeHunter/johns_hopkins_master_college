@@ -19,9 +19,8 @@ class AuthenticationLoginService {
         },
       ),
     );
-    print(response);
+
     if (response.statusCode == 200) {
-      print(response.body);
       Map<String, dynamic> myMap = jsonDecode(response.body);
       if (!myMap["succeeded"]) return null;
       UserModel userModel = UserModel.fromJson(myMap["data"]);

@@ -2,7 +2,7 @@
     package="com.johnshopkins.johns_hopkins_master_college">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="johns_hopkins_master_college"
+        android:label="Johns Hopkins App"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

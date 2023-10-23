@@ -71,31 +71,45 @@ class _StudentMainPageState extends State<StudentMainPage> {
       return;
     }
 
-    /*Comentar si esta en modo desarrollo*/
-    UserModel? userModel = await authenticationLoginService
-        .getExternalAuthenticate(_prefs.idToken);
+    final googleSignIn = GoogleSignIn(scopes: ['email']);
+    final googleSignInAccount = await googleSignIn.signInSilently(
+        suppressErrors: false,
+        reAuthenticate: bool.fromEnvironment(_prefs.email));
 
-    /*Comentar si se pasa a prod*/
-    // UserModel? userModel =
-    // await authenticationLoginService.getExternalAuthenticate(_prefs.email);
+    final GoogleSignInAuthentication googleSignInAuth;
+    if (googleSignInAccount != null) {
+      googleSignInAuth = await googleSignInAccount.authentication;
 
-    if (userModel == null || _connectionStatus == ConnectivityResult.none) {
+      /*Comentar si esta en modo desarrollo*/
+      UserModel? userModel = await authenticationLoginService
+          .getExternalAuthenticate(googleSignInAuth.idToken!);
+
+      /*Comentar si se pasa a prod*/
+      // UserModel? userModel =
+      // await authenticationLoginService.getExternalAuthenticate(_prefs.email);
+
+      if (userModel == null || _connectionStatus == ConnectivityResult.none) {
+        _isLoading = false;
+        setState(() {});
+        return;
+      }
+
+      RegExp nifRegex = RegExp(r'^[0-9]{8}$');
+      if (!userModel.roles.contains('Student') ||
+          !nifRegex.hasMatch(userModel.userName)) return;
+
+      _prefs.jwt = userModel.jwtToken;
+
+      await _currentEnrollmentGlobal.createCurrentEnrollment();
+      await _academicYearListGlobal.createAcademicYearList();
+
+      _isLoading = false;
+      setState(() {});
+    } else {
       _isLoading = false;
       setState(() {});
       return;
     }
-
-    RegExp nifRegex = RegExp(r'^[0-9]{8}$');
-    if (!userModel.roles.contains('Student') ||
-        !nifRegex.hasMatch(userModel.userName)) return;
-
-    _prefs.jwt = userModel.jwtToken;
-
-    await _currentEnrollmentGlobal.createCurrentEnrollment();
-    await _academicYearListGlobal.createAcademicYearList();
-
-    _isLoading = false;
-    setState(() {});
   }
 
   getGlobals() async {

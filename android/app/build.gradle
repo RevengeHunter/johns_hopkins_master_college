@@ -50,8 +50,8 @@ android {
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 21
         targetSdkVersion flutter.targetSdkVersion
-        versionCode 4
-        versionName "1.0.4"
+        versionCode 5
+        versionName "1.0.5"
         multiDexEnabled true
     }
 
@@ -62,6 +62,7 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    namespace 'com.johnshopkins.johns_hopkins_master_college'
 
     buildTypes.release.ndk {
         debugSymbolLevel = 'SYMBOL_TABLE' // O 'FULL' si lo prefieres

@@ -53,12 +53,20 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {});
       return;
     }
-
-    GoogleSignInAccount? _googleSignInAccount = await _googleSignIn.signIn();
+    late GoogleSignInAccount? _googleSignInAccount;
+    try{
+      _googleSignInAccount = await _googleSignIn.signIn();
+    }catch(e){
+      _isLoading = false;
+      messageSnackBar('No es usuario de la institución.');
+      setState(() {});
+      return;
+    }
 
     if (_googleSignInAccount == null) {
       _isLoading = false;
       await _googleSignIn.signOut();
+      messageSnackBar('El email ingresado no es válido.');
       setState(() {});
       return;
     }
@@ -75,26 +83,20 @@ class _LoginPageState extends State<LoginPage> {
     //     .getExternalAuthenticate(_textEditingController.text);
 
     if (userModel == null || _connectionStatus == ConnectivityResult.none) {
+      messageSnackBar('El usuario no esta registrado.');
       _isLoading = false;
       setState(() {});
       return;
     }
 
     RegExp nifRegex = RegExp(r'^[0-9]{8}$');
+    print(userModel.roles);
     if (!userModel.roles.contains('Student') ||
         !nifRegex.hasMatch(userModel.userName)) {
+
       _isLoading = false;
+      messageSnackBar('Usted no es estudiante de la institución.');
       setState(() {});
-
-      final snackBar = SnackBar(
-        content: const Text('Usted no es estudiante de la institución.'),
-        action: SnackBarAction(
-          label: 'Ok',
-          onPressed: () {},
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
       return;
     }
 
@@ -132,6 +134,17 @@ class _LoginPageState extends State<LoginPage> {
       ),
       (route) => false,
     );
+  }
+
+  messageSnackBar(String message){
+    final snackBar = SnackBar(
+      content: Text(message),
+      action: SnackBarAction(
+        label: 'Ok',
+        onPressed: () {},
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
